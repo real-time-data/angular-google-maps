@@ -57,9 +57,7 @@
       {
         "call-signature": "nospace",
         "index-signature": "nospace",
-        "parameter": "nospace",
-        "property-delcaration": "nospace",
-        "variable-delcaration": "nospace"
+        "parameter": "nospace"
       }
     ],
     "variable-name": [
@@ -74,10 +72,8 @@
       "check-decl",
       "check-operator",
       "check-separator",
-      "check-module",
       "check-type"
     ],
-    "directive-selector": [true, "element", "agm", "kebab-case"],
     "component-selector": [true, "element", "agm", "kebab-case"],
     "use-input-property-decorator": false,
     "use-output-property-decorator": false,
