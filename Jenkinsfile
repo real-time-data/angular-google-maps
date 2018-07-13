@@ -1,3 +1,4 @@
+apps = ['core', 'js-marker-clusterer', 'snazzy-info-window'];
 pipeline {
   agent none
   options {
@@ -25,13 +26,19 @@ pipeline {
         label 'docker'
       }
       steps {
-        sshagent(['id_rsa_jenkins_gitlab']) {
-            configFileProvider ([configFile (fileId: HOSTED_NPMRC, targetLocation: '.npmrc')]) {
-                sh 'git config --global user.email "jenkins@nextfaze.com"'
-                sh 'git config --global user.name "Jenkins"'
-                sh 'cat .npmrc'
-                sh 'cp .npmrc .caleb'
+          script {
+            def branches = [:]
+            apps.each { app ->
+                branches["${app}"] = {
+                sshagent(['id_rsa_jenkins_gitlab']) {
+                    configFileProvider ([configFile (fileId: HOSTED_NPMRC, targetLocation: '.npmrc')]) {
+                        sh "cd dist/packages/${app}"
+                        sh 'npm publish --verbose'
+                    }
+                }
+                }
             }
+            parallel branches
         }
       }
     }
