@@ -1,4 +1,3 @@
-apps = ['core'];
 pipeline {
   agent none
   options {
