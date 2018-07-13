@@ -28,9 +28,11 @@ pipeline {
       steps {
           script {
             sshagent(['id_rsa_jenkins_gitlab']) {
-                sh "cd dist/packages/core"
-                configFileProvider ([configFile (fileId: HOSTED_NPMRC, targetLocation: '.npmrc')]) {
-                    sh 'npm publish --verbose'
+                configFileProvider ([configFile (fileId: HOSTED_NPMRC, targetLocation: 'dist/packages/core/.npmrc')]) {
+                    dir ("dist/packages/core") {
+                      sh "npm version 1.0.0-${BRANCH_NAME.replace("/", "-")}-${BUILD_NUMBER} --allow-same-version=true --git-tag-version=false --force"
+                      sh 'npm publish --verbose'
+                    }
                 }
             }
           }
