@@ -10,6 +10,7 @@ import {AgmPolylinePoint} from './directives/polyline-point';
 import {AgmKmlLayer} from './directives/kml-layer';
 import {AgmDataLayer} from './directives/data-layer';
 import {AgmFusionTablesLayer} from './directives/fusion-tables-layer';
+import {AgmHeatmapLayer} from './directives/heatmap-layer';
 import {LazyMapsAPILoader} from './services/maps-api-loader/lazy-maps-api-loader';
 import {LAZY_MAPS_API_CONFIG, LazyMapsAPILoaderConfigLiteral} from './services/maps-api-loader/lazy-maps-api-loader';
 import {MapsAPILoader} from './services/maps-api-loader/maps-api-loader';
@@ -22,7 +23,7 @@ export function coreDirectives() {
   return [
     AgmMap, AgmMarker, AgmInfoWindow, AgmCircle, AgmRectangle,
     AgmPolygon, AgmPolyline, AgmPolylinePoint, AgmKmlLayer,
-    AgmDataLayer, AgmFusionTablesLayer
+    AgmDataLayer, AgmFusionTablesLayer, AgmHeatmapLayer
   ];
 }
 

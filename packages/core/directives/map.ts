@@ -13,9 +13,10 @@ import {InfoWindowManager} from '../services/managers/info-window-manager';
 import {MarkerManager} from '../services/managers/marker-manager';
 import {PolygonManager} from '../services/managers/polygon-manager';
 import {PolylineManager} from '../services/managers/polyline-manager';
-import {KmlLayerManager} from './../services/managers/kml-layer-manager';
-import {DataLayerManager} from './../services/managers/data-layer-manager';
+import {KmlLayerManager} from '../services/managers/kml-layer-manager';
+import {DataLayerManager} from '../services/managers/data-layer-manager';
 import {FusionTablesLayerManager} from './../services/managers/fusion-tables-layer-manager';
+import {HeatmapLayerManager} from '../services/managers/heatmap-layer-manager';
 
 /**
  * AgmMap renders a Google Map.
@@ -44,7 +45,8 @@ import {FusionTablesLayerManager} from './../services/managers/fusion-tables-lay
   selector: 'agm-map',
   providers: [
     GoogleMapsAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, RectangleManager,
-    PolylineManager, PolygonManager, KmlLayerManager, DataLayerManager, FusionTablesLayerManager
+    PolylineManager, PolygonManager, KmlLayerManager, DataLayerManager, FusionTablesLayerManager,
+    HeatmapLayerManager
   ],
   host: {
     // todo: deprecated - we will remove it with the next version
