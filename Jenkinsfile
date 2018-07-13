@@ -1,4 +1,4 @@
-apps = ['core', 'js-marker-clusterer', 'snazzy-info-window'];
+apps = ['core'];
 pipeline {
   agent none
   options {
