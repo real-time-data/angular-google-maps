@@ -5,15 +5,18 @@ import {MouseEvent} from '../map-types';
 import {GoogleMapsAPIWrapper} from '../services/google-maps-api-wrapper';
 import {
   FullscreenControlOptions, LatLng, LatLngLiteral, MapTypeControlOptions, MapTypeId, PanControlOptions,
-  RotateControlOptions, ScaleControlOptions, StreetViewControlOptions, ZoomControlOptions} from '../services/google-maps-types';
+  RotateControlOptions, ScaleControlOptions, StreetViewControlOptions, ZoomControlOptions, Padding} from '../services/google-maps-types';
 import {LatLngBounds, LatLngBoundsLiteral, MapTypeStyle} from '../services/google-maps-types';
 import {CircleManager} from '../services/managers/circle-manager';
+import {RectangleManager} from '../services/managers/rectangle-manager';
 import {InfoWindowManager} from '../services/managers/info-window-manager';
 import {MarkerManager} from '../services/managers/marker-manager';
 import {PolygonManager} from '../services/managers/polygon-manager';
 import {PolylineManager} from '../services/managers/polyline-manager';
-import {KmlLayerManager} from './../services/managers/kml-layer-manager';
-import {DataLayerManager} from './../services/managers/data-layer-manager';
+import {KmlLayerManager} from '../services/managers/kml-layer-manager';
+import {DataLayerManager} from '../services/managers/data-layer-manager';
+import {FusionTablesLayerManager} from './../services/managers/fusion-tables-layer-manager';
+import {HeatmapLayerManager} from '../services/managers/heatmap-layer-manager';
 
 /**
  * AgmMap renders a Google Map.
@@ -41,8 +44,9 @@ import {DataLayerManager} from './../services/managers/data-layer-manager';
 @Component({
   selector: 'agm-map',
   providers: [
-    GoogleMapsAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, PolylineManager,
-    PolygonManager, KmlLayerManager, DataLayerManager
+    GoogleMapsAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, RectangleManager,
+    PolylineManager, PolygonManager, KmlLayerManager, DataLayerManager, FusionTablesLayerManager,
+    HeatmapLayerManager
   ],
   host: {
     // todo: deprecated - we will remove it with the next version
@@ -181,6 +185,11 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
    * Sets the viewport to contain the given bounds.
    */
   @Input() fitBounds: LatLngBoundsLiteral|LatLngBounds = null;
+
+  /**
+   * Padding amount for bounds. This optional parameter is undefined by default.
+   */
+  @Input() boundsPadding: number|Padding;
 
   /**
    * The initial enabled/disabled state of the Scale control. This is disabled by default.
@@ -447,10 +456,10 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
 
   private _fitBounds() {
     if (this.usePanning) {
-      this._mapsWrapper.panToBounds(this.fitBounds);
+      this._mapsWrapper.panToBounds(this.fitBounds, this.boundsPadding);
       return;
     }
-    this._mapsWrapper.fitBounds(this.fitBounds);
+    this._mapsWrapper.fitBounds(this.fitBounds, this.boundsPadding);
   }
 
   private _handleMapCenterChange() {

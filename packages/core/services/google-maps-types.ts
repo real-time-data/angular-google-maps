@@ -13,14 +13,19 @@ export interface GoogleMap extends MVCObject {
   getMapTypeId(): MapTypeId;
   getZoom(): number;
   setOptions(options: MapOptions): void;
-  panToBounds(latLngBounds: LatLngBounds|LatLngBoundsLiteral): void;
-  fitBounds(bounds: LatLngBounds|LatLngBoundsLiteral): void;
+  panToBounds(latLngBounds: LatLngBounds|LatLngBoundsLiteral, padding?: number|Padding): void;
+  fitBounds(bounds: LatLngBounds|LatLngBoundsLiteral, padding?: number|Padding): void;
 }
 
 export interface LatLng {
   constructor(lat: number, lng: number): void;
   lat(): number;
   lng(): number;
+}
+
+export interface WeightedLocation {
+  location: LatLng;
+  weight: number;
 }
 
 export interface Marker extends MVCObject {
@@ -93,6 +98,43 @@ export interface CircleOptions {
   strokeWeight?: number;
   visible?: boolean;
   zIndex?: number;
+}
+
+export interface Rectangle extends MVCObject {
+  getBounds(): LatLngBounds;
+  getDraggable(): boolean;
+  getEditable(): boolean;
+  getMap(): GoogleMap;
+  getVisible(): boolean;
+  setBounds(bounds: LatLngBounds|LatLngBoundsLiteral): void;
+  setDraggable(draggable: boolean): void;
+  setEditable(editable: boolean): void;
+  setMap(map: GoogleMap): void;
+  setOptions(options: RectangleOptions): void;
+  setVisible(visible: boolean): void;
+}
+
+export interface RectangleOptions {
+  bounds?: LatLngBounds|LatLngBoundsLiteral;
+  clickable?: boolean;
+  draggable?: boolean;
+  editable?: boolean;
+  fillColor?: string;
+  fillOpacity?: number;
+  map?: GoogleMap;
+  strokeColor?: string;
+  strokeOpacity?: number;
+  strokePosition?: 'CENTER'|'INSIDE'|'OUTSIDE';
+  strokeWeight?: number;
+  visible?: boolean;
+  zIndex?: number;
+}
+
+export interface Padding {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
 }
 
 export interface LatLngBounds {
@@ -325,6 +367,24 @@ export interface Polygon extends MVCObject {
   setVisible(visible: boolean): void;
 }
 
+export interface HeatmapLayer extends MVCObject {
+  getData():  Array<LatLng|WeightedLocation>;
+  getMap(): GoogleMap;
+  setData(data: Array<LatLng|WeightedLocation>): void;
+  setMap(map: GoogleMap): void;
+  setOptions(options: HeatmapLayerOptions): void;
+}
+
+export interface HeatmapLayerOptions {
+  data: Array<LatLng|WeightedLocation>;
+  dissipating: boolean;
+  gradient: Array<string>;
+  map: GoogleMap;
+  maxIntensity: number;
+  opacity: number;
+  radius: number;
+}
+
 export interface KmlLayer extends MVCObject {
   getDefaultViewport(): LatLngBounds;
   getMap(): GoogleMap;
@@ -404,6 +464,61 @@ export interface Data extends MVCObject {
   forEach(callback: (feature: Feature) => void): void;
   loadGeoJson(url: string, options?: GeoJsonOptions, callback?: (feats: Feature[]) => void): void;
   /* tslint:enable */
+}
+
+export interface FusionTablesLayer extends MVCObject {
+  getMap(): GoogleMap;
+  setMap(map: GoogleMap): void;
+  setOptions(options: FusionTablesLayerOptions): void;
+}
+
+export interface FusionTablesLayerOptions {
+  clickable?: boolean;
+  heatmap?: FusionTablesHeatmap;
+  map?: GoogleMap;
+  query?: FusionTablesQuery;
+  styles?: FusionTablesStyle[];
+  suppressInfoWindows?: boolean;
+}
+
+export interface FusionTablesHeatmap {
+  enabled?: boolean;
+}
+
+export interface FusionTablesQuery {
+  from: string;
+  limit?: number;
+  offset?: number;
+  orderBy?: string;
+  select?: string;
+  where?: string;
+}
+
+export interface FusionTablesStyle {
+  markerOptions?: FusionTablesMarkerOptions;
+  polygonOptions?: FusionTablesPolygonOptions;
+  polylineOptions?: FusionTablesPolylineOptions;
+  where?: string;
+}
+
+export interface FusionTablesMarkerOptions {
+  iconName: string;
+}
+
+export type FusionTablesPolygonOptions = Pick<PolygonOptions, 'fillColor' | 'fillOpacity' | 'strokeColor'| 'strokeOpacity' | 'strokeWeight'>;
+
+export type FusionTablesPolylineOptions = Pick<PolylineOptions,  'strokeColor'| 'strokeOpacity' | 'strokeWeight'>;
+
+export interface FusionTablesMouseEvent {
+  infoWindowHtml?: string;
+  latLng?: LatLng;
+  pixelOffset?: Size;
+  row?: FusionTablesCell;
+}
+
+export interface FusionTablesCell {
+  columnName?: string;
+  value?: string;
 }
 
 export interface Feature extends MVCObject {

@@ -4,6 +4,7 @@ import {Observable, Observer} from 'rxjs';
 import * as mapTypes from './google-maps-types';
 import {Polyline} from './google-maps-types';
 import {PolylineOptions} from './google-maps-types';
+import {Padding} from './google-maps-types';
 import {MapsAPILoader} from './maps-api-loader/maps-api-loader';
 
 // todo: add types for this
@@ -64,6 +65,16 @@ export class GoogleMapsAPIWrapper {
     });
   }
 
+  /**
+   * Creates a google.map.Rectangle for the current map.
+   */
+  createRectangle(options: mapTypes.RectangleOptions): Promise<mapTypes.Rectangle> {
+    return this._map.then((map: mapTypes.GoogleMap) => {
+      options.map = map;
+      return new google.maps.Rectangle(options);
+    });
+  }
+
   createPolyline(options: PolylineOptions): Promise<Polyline> {
     return this.getNativeMap().then((map: mapTypes.GoogleMap) => {
       let line = new google.maps.Polyline(options);
@@ -88,6 +99,17 @@ export class GoogleMapsAPIWrapper {
       let data = new google.maps.Data(options);
       data.setMap(m);
       return data;
+    });
+  }
+
+  /**
+   * Creates a new google.map.FusionTablesLayer for the current map
+   */
+  createFusionTablesLayer(options?: mapTypes.FusionTablesLayerOptions): Promise<mapTypes.FusionTablesLayer> {
+    return this._map.then(m => {
+      let layer = new google.maps.FusionTablesLayer(options);
+      layer.setMap(m);
+      return layer;
     });
   }
 
@@ -146,12 +168,12 @@ export class GoogleMapsAPIWrapper {
     return this._map.then((map) => map.panBy(x, y));
   }
 
-  fitBounds(latLng: mapTypes.LatLngBounds|mapTypes.LatLngBoundsLiteral): Promise<void> {
-    return this._map.then((map) => map.fitBounds(latLng));
+  fitBounds(latLng: mapTypes.LatLngBounds|mapTypes.LatLngBoundsLiteral, padding?: number|Padding): Promise<void> {
+    return this._map.then((map) => map.fitBounds(latLng, padding));
   }
 
-  panToBounds(latLng: mapTypes.LatLngBounds|mapTypes.LatLngBoundsLiteral): Promise<void> {
-    return this._map.then((map) => map.panToBounds(latLng));
+  panToBounds(latLng: mapTypes.LatLngBounds|mapTypes.LatLngBoundsLiteral, padding?: number|Padding): Promise<void> {
+    return this._map.then((map) => map.panToBounds(latLng, padding));
   }
 
   /**
