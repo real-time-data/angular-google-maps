@@ -423,6 +423,13 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Returns the bounds of the google maps instance.
+   */
+  getBounds(): Promise<LatLngBounds> {
+    return this._mapsWrapper.getBounds();
+  }
+
   private _updatePosition(changes: SimpleChanges) {
     if (changes['latitude'] == null && changes['longitude'] == null &&
         changes['fitBounds'] == null) {
