@@ -140,6 +140,8 @@ export class GoogleMapsAPIWrapper {
 
   getZoom(): Promise<number> { return this._map.then((map: mapTypes.GoogleMap) => map.getZoom()); }
 
+  getTilt(): Promise<number> { return this._map.then((map: mapTypes.GoogleMap) => map.getTilt()); }
+
   getBounds(): Promise<mapTypes.LatLngBounds> {
     return this._map.then((map: mapTypes.GoogleMap) => map.getBounds());
   }
@@ -150,6 +152,10 @@ export class GoogleMapsAPIWrapper {
 
   setZoom(zoom: number): Promise<void> {
     return this._map.then((map: mapTypes.GoogleMap) => map.setZoom(zoom));
+  }
+
+  setTilt(tilt: number): Promise<void> {
+    return this._map.then((map: mapTypes.GoogleMap) => map.setTilt(tilt));
   }
 
   getCenter(): Promise<mapTypes.LatLng> {

@@ -12,3 +12,4 @@ export {HeatmapLayerManager} from './services/managers/heatmap-layer-manager';
 export {GoogleMapsScriptProtocol, LAZY_MAPS_API_CONFIG, LazyMapsAPILoader, LazyMapsAPILoaderConfigLiteral} from './services/maps-api-loader/lazy-maps-api-loader';
 export {MapsAPILoader} from './services/maps-api-loader/maps-api-loader';
 export {NoOpMapsAPILoader} from './services/maps-api-loader/noop-maps-api-loader';
+export {FitBoundsAccessor, FitBoundsDetails} from './services/fit-bounds';

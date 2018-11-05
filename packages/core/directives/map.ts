@@ -17,6 +17,9 @@ import {KmlLayerManager} from '../services/managers/kml-layer-manager';
 import {DataLayerManager} from '../services/managers/data-layer-manager';
 import {FusionTablesLayerManager} from './../services/managers/fusion-tables-layer-manager';
 import {HeatmapLayerManager} from '../services/managers/heatmap-layer-manager';
+import {FitBoundsService} from '../services/fit-bounds';
+
+declare var google: any;
 
 /**
  * AgmMap renders a Google Map.
@@ -45,8 +48,8 @@ import {HeatmapLayerManager} from '../services/managers/heatmap-layer-manager';
   selector: 'agm-map',
   providers: [
     GoogleMapsAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, RectangleManager,
-    PolylineManager, PolygonManager, KmlLayerManager, DataLayerManager, FusionTablesLayerManager,
-    HeatmapLayerManager
+    PolylineManager, PolygonManager, KmlLayerManager, DataLayerManager, DataLayerManager,
+    FitBoundsService, FusionTablesLayerManager, HeatmapLayerManager
   ],
   host: {
     // todo: deprecated - we will remove it with the next version
@@ -83,6 +86,11 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
    * The zoom level of the map. The default zoom level is 8.
    */
   @Input() zoom: number = 8;
+
+  /**
+   * The tilt level of the map. The default zoom level is 0.
+   */
+  @Input() tilt: number = 0;
 
   /**
    * The minimal zoom level of the map allowed. When not provided, no restrictions to the zoom level
@@ -183,8 +191,9 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
 
   /**
    * Sets the viewport to contain the given bounds.
+   * If this option to `true`, the bounds get automatically computed from all elements that use the {@link AgmFitBounds} directive.
    */
-  @Input() fitBounds: LatLngBoundsLiteral|LatLngBounds = null;
+  @Input() fitBounds: LatLngBoundsLiteral|LatLngBounds|boolean = false;
 
   /**
    * Padding amount for bounds. This optional parameter is undefined by default.
@@ -275,6 +284,7 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   ];
 
   private _observableSubscriptions: Subscription[] = [];
+  private _fitBoundsSubscription: Subscription;
 
   /**
    * This event emitter gets emitted when the user clicks on the map (but not when they click on a
@@ -320,12 +330,17 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   @Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
 
   /**
+   * This event is fired when the tilt level has changed.
+   */
+  @Output() tiltChange: EventEmitter<number> = new EventEmitter<number>();
+
+  /**
    * This event is fired when the google map is fully initialized.
    * You get the google.maps.Map instance as a result of this EventEmitter.
    */
   @Output() mapReady: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private _elem: ElementRef, private _mapsWrapper: GoogleMapsAPIWrapper) {}
+  constructor(private _elem: ElementRef, private _mapsWrapper: GoogleMapsAPIWrapper, protected _fitBoundsService: FitBoundsService) {}
 
   /** @internal */
   ngOnInit() {
@@ -373,6 +388,7 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
     // register event listeners
     this._handleMapCenterChange();
     this._handleMapZoomChange();
+    this._handleMapTiltChange();
     this._handleMapMouseEvents();
     this._handleBoundsChange();
     this._handleMapTypeIdChange();
@@ -386,6 +402,9 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
 
     // remove all listeners from the map instance
     this._mapsWrapper.clearInstanceListeners();
+    if (this._fitBoundsSubscription) {
+      this._fitBoundsSubscription.unsubscribe();
+    }
   }
 
   /* @internal */
@@ -432,13 +451,13 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
 
   private _updatePosition(changes: SimpleChanges) {
     if (changes['latitude'] == null && changes['longitude'] == null &&
-        changes['fitBounds'] == null) {
+        !changes['fitBounds']) {
       // no position update needed
       return;
     }
 
     // we prefer fitBounds in changes
-    if (changes['fitBounds'] && this.fitBounds != null) {
+    if ('fitBounds' in changes) {
       this._fitBounds();
       return;
     }
@@ -462,11 +481,39 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   }
 
   private _fitBounds() {
+    switch (this.fitBounds) {
+      case true:
+        this._subscribeToFitBoundsUpdates();
+      break;
+      case false:
+        if (this._fitBoundsSubscription) {
+          this._fitBoundsSubscription.unsubscribe();
+        }
+       break;
+       default:
+       this._updateBounds(this.fitBounds);
+    }
+  }
+
+  private _subscribeToFitBoundsUpdates() {
+    this._fitBoundsSubscription = this._fitBoundsService.getBounds$().subscribe(b => this._updateBounds(b));
+  }
+
+  protected _updateBounds(bounds: LatLngBounds|LatLngBoundsLiteral) {
+    if (this._isLatLngBoundsLiteral(bounds) && google && google.maps) {
+      const newBounds = <LatLngBounds>google.maps.LatLngBounds();
+      newBounds.union(bounds);
+      bounds = newBounds;
+    }
     if (this.usePanning) {
-      this._mapsWrapper.panToBounds(this.fitBounds, this.boundsPadding);
+      this._mapsWrapper.panToBounds(bounds);
       return;
     }
-    this._mapsWrapper.fitBounds(this.fitBounds, this.boundsPadding);
+    this._mapsWrapper.fitBounds(bounds);
+  }
+
+  private _isLatLngBoundsLiteral(bounds: LatLngBounds|LatLngBoundsLiteral): bounds is LatLngBoundsLiteral {
+    return bounds != null && (<any>bounds).extend === undefined;
   }
 
   private _handleMapCenterChange() {
@@ -501,6 +548,16 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
       this._mapsWrapper.getZoom().then((z: number) => {
         this.zoom = z;
         this.zoomChange.emit(z);
+      });
+    });
+    this._observableSubscriptions.push(s);
+  }
+
+  private _handleMapTiltChange() {
+    const s = this._mapsWrapper.subscribeToMapEvent<void>('tilt_changed').subscribe(() => {
+      this._mapsWrapper.getTilt().then((t: number) => {
+        this.tilt = t;
+        this.tiltChange.emit(t);
       });
     });
     this._observableSubscriptions.push(s);

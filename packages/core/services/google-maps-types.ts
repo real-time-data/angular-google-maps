@@ -7,10 +7,12 @@ export interface GoogleMap extends MVCObject {
   panTo(latLng: LatLng|LatLngLiteral): void;
   panBy(x: number, y: number): void;
   setZoom(zoom: number): void;
+  setTilt(tilt: number): void;
   getCenter(): LatLng;
   setCenter(latLng: LatLng|LatLngLiteral): void;
   getBounds(): LatLngBounds;
   getMapTypeId(): MapTypeId;
+  getTilt(): number;
   getZoom(): number;
   setOptions(options: MapOptions): void;
   panToBounds(latLngBounds: LatLngBounds|LatLngBoundsLiteral, padding?: number|Padding): void;
@@ -21,6 +23,7 @@ export interface LatLng {
   constructor(lat: number, lng: number): void;
   lat(): number;
   lng(): number;
+  toString(): string;
 }
 
 export interface WeightedLocation {
@@ -140,7 +143,7 @@ export interface Padding {
 export interface LatLngBounds {
   contains(latLng: LatLng): boolean;
   equals(other: LatLngBounds|LatLngBoundsLiteral): boolean;
-  extend(point: LatLng): void;
+  extend(point: LatLng|LatLngLiteral): void;
   getCenter(): LatLng;
   getNorthEast(): LatLng;
   getSouthWest(): LatLng;
@@ -181,6 +184,7 @@ export interface MapOptions {
   draggingCursor?: string;
   keyboardShortcuts?: boolean;
   styles?: MapTypeStyle[];
+  tilt?: number;
   zoomControl?: boolean;
   zoomControlOptions?: ZoomControlOptions;
   streetViewControl?: boolean;

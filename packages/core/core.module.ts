@@ -16,6 +16,7 @@ import {LazyMapsAPILoader} from './services/maps-api-loader/lazy-maps-api-loader
 import {LAZY_MAPS_API_CONFIG, LazyMapsAPILoaderConfigLiteral} from './services/maps-api-loader/lazy-maps-api-loader';
 import {MapsAPILoader} from './services/maps-api-loader/maps-api-loader';
 import {BROWSER_GLOBALS_PROVIDERS} from './utils/browser-globals';
+import {AgmFitBounds} from '@agm/core/directives/fit-bounds';
 
 /**
  * @internal
@@ -24,7 +25,8 @@ export function coreDirectives() {
   return [
     AgmMap, AgmMarker, AgmInfoWindow, AgmCircle, AgmRectangle,
     AgmPolygon, AgmPolyline, AgmPolylinePoint, AgmKmlLayer,
-    AgmDataLayer, AgmFusionTablesLayer, AgmHeatmapLayer, AgmControl
+    AgmDataLayer, AgmFusionTablesLayer, AgmHeatmapLayer, AgmControl,
+    AgmFitBounds
   ];
 }
 
