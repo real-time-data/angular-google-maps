@@ -353,6 +353,7 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
     this._mapsWrapper.createMap(el, {
       center: {lat: this.latitude || 0, lng: this.longitude || 0},
       zoom: this.zoom,
+      tilt: this.tilt,
       minZoom: this.minZoom,
       maxZoom: this.maxZoom,
       disableDefaultUI: this.disableDefaultUI,
