@@ -507,10 +507,10 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
       bounds = newBounds;
     }
     if (this.usePanning) {
-      this._mapsWrapper.panToBounds(bounds);
+      this._mapsWrapper.panToBounds(bounds, this.boundsPadding);
       return;
     }
-    this._mapsWrapper.fitBounds(bounds);
+    this._mapsWrapper.fitBounds(bounds, this.boundsPadding);
   }
 
   private _isLatLngBoundsLiteral(bounds: LatLngBounds|LatLngBoundsLiteral): bounds is LatLngBoundsLiteral {
