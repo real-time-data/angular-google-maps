@@ -215,7 +215,7 @@ describe('ClusterManager', () => {
         async (markerManager: ClusterManager) => {
 
           const mockClusterer = { setCalculator: jest.fn() };
-          const instancePromise = Promise.resolve(mockClusterer);
+          const instancePromise: any = Promise.resolve(mockClusterer);
 
           const spy = jest.spyOn(markerManager, 'getClustererInstance')
                           .mockImplementation(() => instancePromise);
